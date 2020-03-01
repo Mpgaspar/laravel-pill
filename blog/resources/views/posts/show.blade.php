@@ -3,18 +3,23 @@
 @section('content')
   <a href="/posts" class="btn btn-primary">Go Back</a>
   <h1>{{$post->title}}</h1>
+  <img class="card-img-top" src="/storage/cover_images/{{ $post->cover_image }}" alt="image">
   <div>
       {{$post->body}}
   </div>
   <hr>
-  <small>Written on {{ $post->created_at }}</small>
+  <small>Written on {{ $post->created_at }} by {{ $post->user->name }}</small>
   <hr>
-  <div class="row">
-  <a href="/posts/{{$post->id}}/edit" class="btn btn-secondary">Edit</a>
+  @if(!Auth::guest())
+      @if(Auth::user()->id == $post->user_id)
+        <div class="row">
+            <a href="/posts/{{$post->id}}/edit" class="btn btn-secondary">Edit</a>
 
-  {!!Form::open(['action' => ['PostsController@destroy', $post->id], 'method' => 'POST', 'class' => 'pull-rigth'])!!}
-      {{Form::hidden('_method', 'DELETE')}}
-      {{Form::submit('Delete', ['class' => 'btn btn-danger offset-md-3'])}}
-  {!!Form::close()!!}
-  </div>
+            {!!Form::open(['action' => ['PostsController@destroy', $post->id], 'method' => 'POST', 'class' => 'pull-rigth'])!!}
+                {{Form::hidden('_method', 'DELETE')}}
+                {{Form::submit('Delete', ['class' => 'btn btn-danger offset-md-3'])}}
+            {!!Form::close()!!}
+        </div>
+      @endif
+    @endif
 @endsection
