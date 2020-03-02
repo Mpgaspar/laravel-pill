@@ -26,6 +26,9 @@
             <li class="navbar-item">
               <a class="nav-link" href="/posts/create">Create Post</a>
             </li>
+            <li class="navbar-item">
+              <a class="nav-link" href="/contact">Contact</a>
+            </li>
           </ul>
 
           <!-- Right Side Of Navbar -->

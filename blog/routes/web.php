@@ -19,6 +19,9 @@
 Route::get('/', 'PagesController@index');
 Route::get('/about', 'PagesController@about');
 Route::get('/services', 'PagesController@services');
+Route::get('/testvue', 'PagesController@vue');
+Route::get('/contact', 'PagesController@getContact');
+Route::post('/contact', 'PagesController@postContact');
 
 Route::resource('posts', 'PostsController');
 

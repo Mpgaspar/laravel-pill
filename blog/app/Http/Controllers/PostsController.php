@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Post;
 use DB; 
 
@@ -59,6 +60,7 @@ class PostsController extends Controller
             'cover_image' => 'image|nullable|max:1999'
         ]);
 
+        // Handle File Upload
         if($request->hasFile('cover_image')) {
             // Get filename with the extension
             $fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
@@ -129,11 +131,28 @@ class PostsController extends Controller
             'title' => 'required',
             'body' => 'required'
         ]);
+
+        // Handle File Upload
+        if($request->hasFile('cover_image')) {
+            // Get filename with the extension
+            $fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
+            // Get just filename
+            $filename = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+            // Get just ext
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+            // Filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            // Upload Image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+        }
         
         // Update Post
         $post = Post::find($id);
         $post->title = $request->input('title');
         $post->body = $request->input('body');
+        if($request->hasFile('cover_image')) {
+            $post->cover_image = $fileNameToStore;
+        }
         $post->save();
 
         return redirect('/posts')->with('success', 'Post Updated');
@@ -152,6 +171,11 @@ class PostsController extends Controller
          // Check for correct user
          if(auth()->user()->id !== $post->user_id) {
             return redirect('/posts')->with('error', 'Unauthorized Page');  
+        }
+
+        if($post->cover_image != 'noimage.jpg'){
+            // Delete Image
+            Storage::delete('public/cover_images/'.$post->cover_image);
         }
 
         $post->delete();

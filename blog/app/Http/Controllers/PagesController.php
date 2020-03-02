@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Mail;
 
 class PagesController extends Controller
 {
@@ -17,6 +18,12 @@ class PagesController extends Controller
         return view('pages.about')->with('title', $title);
     }
 
+    public function vue(){
+        $title = 'Test Vue.js';
+        return view('pages.testvue')->with('title', $title);
+    }
+    
+
     public function services(){
         $data = array(
             'title' => 'Services',
@@ -24,4 +31,32 @@ class PagesController extends Controller
         );
         return view('pages.services')->with($data);
     }
+
+    public function getContact(){
+        $title = 'Contact Us!';
+        return view('pages.contact')->with('title', $title);
+    }
+
+    public function postContact(Request $request) {
+        $this->validate($request, [
+            'email'=> 'required|email',
+            'subject'=> 'min:3',
+            'message'=> 'min:3'
+        ]);
+
+        $data = array(
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'bodyMessage' => $request->message
+        );
+
+        Mail::send('pages.templateMail', $data, function($message) use($data) {
+            $message->from($data['email']);
+            $message->to('drmpgaspar@gmail.com');
+            $message->subject($data['subject']);
+        });
+        $title = 'Thank you to contact us!';
+        return view('pages.email')->with('title', $title);
+    } 
 }
+
